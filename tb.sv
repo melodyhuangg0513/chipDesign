@@ -1,45 +1,37 @@
-`timescale 1ns / 1ps
+`include "uvm_macros.svh"
+import uvm_pkg::*;
 
-module tb_light_show_controller();
-    reg [2:0] color_switch;
-    reg speed_switch;
-    reg pattern_switch;
-    wire [2:0] pwm_out;
+// Declare the testbench components
+class top_env extends uvm_env;
+    // Declare instances of the agents, sequences, and scoreboard here
+endclass
 
-    light_show_controller top (
-        .color_switch(color_switch),
-        .speed_switch(speed_switch),
-        .pattern_switch(pattern_switch),
-        .pwm_out(pwm_out)
+// Create the testbench top module
+module tb;
+    logic clk;
+    logic reset;
+    top_if top_if_inst(clk);
+
+    // Clock generation
+    always begin
+        #5 clk = ~clk;
+    end
+
+    // Instantiate the DUT and connect it to the interface
+    top top_inst(
+        .clk(top_if_inst.clk),
+        .reset(top_if_inst.reset),
+        .color_switch(top_if_inst.color_switch),
+        .speed_switch(top_if_inst.speed_switch),
+        .pattern_switch(top_if_inst.pattern_switch),
+        .pwm_out(top_if_inst.pwm_out)
     );
 
+    // Instantiate the UVM testbench components and connect them to the interface
+    top_env top_env_inst;
+
     initial begin
-        // Initialize the switch inputs
-        color_switch = 3'b000;
-        speed_switch = 1'b0;
-        pattern_switch = 1'b0;
-
-        // Test the color switches
-        #10 color_switch = 3'b001; // Red
-        #10 color_switch = 3'b010; // Green
-        #10 color_switch = 3'b100; // Blue
-        #10 color_switch = 3'b011; // Yellow
-        #10 color_switch = 3'b101; // Magenta
-        #10 color_switch = 3'b110; // Cyan
-        #10 color_switch = 3'b111; // White
-        #10 color_switch = 3'b000; // Off
-
-        // Test the speed switch
-        repeat (10) begin
-            #10 speed_switch = ~speed_switch;
-        end
-
-        // Test the pattern switch
-        repeat (4) begin
-            #10 pattern_switch = ~pattern_switch;
-        end
-
-        // Finish the simulation
-        #10 $finish;
+        uvm_config_db#(virtual top_if)::set(null, "*", "vif", top_if_inst);
+        run_test();
     end
 endmodule
