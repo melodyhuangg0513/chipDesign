@@ -1,24 +1,44 @@
-name: Programmable Lightshow System
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+--- 
 project:
-  source-file:
+  source_files:
     - debounce.sv
-    - main.sv
     - pwm_generator.sv
-  top_module: "top.sv"
-jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+    - main.sv
+    - tb.sv
+    - tb_light_show_controller.sv
+  top_module:  "top"
+
+# As everyone will have access to all designs, try to make it easy for someone new to your design to know what
+# it does and how to operate it.
+#
+# Here is an example: https://github.com/mattvenn/tinytapeout_m_segments/blob/main/info.yaml
+#
+# This info will be automatically collected and used to make a datasheet for the chip.
+documentation: 
+  author:       "Melody Huang"      # Your name
+  title:        "Programmable Light Show System"      # Project title
+  description:  "a programmable light-show system which can control RGB LED light strips to generate fabulous visual effects in a synchronized way using switches. Users can adjust the light-show settings and change the system with different patterns of blinking using the switches.R"      # Short description of what your project does
+  how_it_works: "The purpose of this system is to control RGB LED light strips to create stunning and synchronized visual effects. Users can manipulate the light show's settings and switch between different patterns of blinking using switches.
+
+The system is operated using the following inputs:
+Color switch: Three separate switches for controlling the Red, Green, and Blue channels.
+Speed switch: Adjusts the speed of the light show by incrementing or decrementing the speed.
+Pattern switch: Selects different patterns for the light show.
+The output of the system consists of control signals for the RGB LED strips. These control signals are PWM (Pulse Width Modulation) signals for the Red, Green, and Blue channels.
+
+The project's hardware peripherals are the LEDs, which serve as the primary visual output for the light-show system.
+
+To ensure the system's proper functioning, a testing and verification methodology based on the Universal Verification Methodology (UVM) framework is employed. The self-checking testbench is implemented in the tb.sv (testbench SystemVerilog) file. The test inputs are generated using sequences and sequence items within the UVM testbench environment. Monitors are used to observe the output of the device under test (DUT) and compare it to the expected output using a scoreboard. Assertions are employed to check the DUT's behavior throughout the simulation."      # Longer description of how the project works
+  how_to_test:  "The testing and verification methodology used here is based on the UVM (Universal Verification Methodology) framework. The self-checking testbench is implemented in the tb.sv file. The test inputs are generated using sequences and sequence items, which are part of the UVM testbench environment. Monitors are used to observe the DUT's output and compare it with the expected output using a scoreboard. Assertions are used to check the DUT's behavior during the simulation."      # Instructions on how someone could test your project, include things like what buttons do what and how to set the clock if needed
+  external_hw:  "LEDs"      # Describe any external hardware needed
+  language:     "verilog" # other examples include Verilog, Amaranth, VHDL, etc
+  doc_link:     "README.md"      # URL to longer form documentation, eg the README.md in your repository
+  clock_hz:     1000       # Clock frequency in Hz (if required)
+  inputs:
+  - Color switch (3 switches for Red, Green, and Blue channels)
+  - Speed switch (increments/decrements speed of the light show)
+  - Pattern switch (selects different patterns)
+  outputs:
+  - RGB LED strips control signals (PWM signals for Red, Green, and Blue channels)
+
+  
